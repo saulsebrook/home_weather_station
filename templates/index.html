@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .card-icon {
+            font-size: 2.5em;
+            margin-right: 15px;
+        }
+
+        .card-title {
+            font-size: 1.3em;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .reading-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f5f5f5;
+        }
+
+        .reading-item:last-child {
+            border-bottom: none;
+        }
+
+        .reading-label {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .reading-value {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .aircraft-card {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .aircraft-count {
+            font-size: 4em;
+            font-weight: bold;
+            margin: 20px 0;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+        }
+
+        .aircraft-label {
+            font-size: 1.3em;
+            opacity: 0.9;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .timestamp {
+            color: #999;
+            font-size: 0.85em;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .view-history {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: background 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .view-history:hover {
+            background: #5568d3;
+        }
+
+        .no-data {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 60px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            color: #666;
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+            
+            .aircraft-count {
+                font-size: 3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌤️ Weather & Aviation Dashboard</h1>
+            <p>Real-time environmental monitoring & aircraft tracking</p>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Aircraft Tracking Card -->
+            <div class="card aircraft-card">
+                <div class="card-icon">✈️</div>
+                <div class="aircraft-label">Aircraft Currently Tracked</div>
+                <div class="aircraft-count">{{ aircraft }}</div>
+                <p style="opacity: 0.8;">Live ADS-B data from your receiver</p>
+            </div>
+
+            <!-- Sensor Cards -->
+            {% if sensors %}
+                {% for sensor_id, data in sensors.items() %}
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-icon">📡</div>
+                        <div class="card-title">{{ sensor_id }}</div>
+                    </div>
+                    
+                    <div class="reading-item">
+                        <span class="reading-label">🌡️ Temperature</span>
+                        <span class="reading-value">{{ "%.1f"|format(data.temperature) }}°C</span>
+                    </div>
+                    
+                    <div class="reading-item">
+                        <span class="reading-label">💧 Humidity</span>
+                        <span class="reading-value">{{ "%.1f"|format(data.humidity) }}%</span>
+                    </div>
+                    
+                    <div class="reading-item">
+                        <span class="reading-label">📊 Pressure</span>
+                        <span class="reading-value">{{ "%.1f"|format(data.pressure) }} hPa</span>
+                    </div>
+                    
+                    <div class="timestamp">
+                        Last update: {{ data.timestamp }}
+                    </div>
+                    
+                    <a href="/history/{{ sensor_id }}" class="view-history">📈 View History</a>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-data">
+                    <p>⚠️ No sensor data available yet</p>
+                    <p style="font-size: 0.9em; margin-top: 10px; opacity: 0.7;">Waiting for first readings...</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Auto-refresh every 20 seconds
+        setTimeout(function(){
+            location.reload();
+        }, 20000);
+    </script>
+</body>
+</html>
