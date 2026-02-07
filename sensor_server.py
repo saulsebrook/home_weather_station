@@ -13,10 +13,12 @@ def aircraft_data():
     aircraft_tracked = 0;
     with open(AIRCRAFT_JSON, 'r') as f:
         data = json.load(f);
+        max_distance_m = data.get('total', {}).get('max_distance', 0)
+        max_distance_nm = round(max_distance_m / 1852, 1) if max_distance_m > 0 else 0
     stats = {
         "current_aircraft":{
             "total": data.get('aircraft_with_pos', 0),
-            "max_range": data.get('last15min', {}).get('tracks', {}).get('max_range', 0),
+            "max_range": max_distance_nm,
             "total_messages": data.get('total', {}).get('messages_valid', {}),
             } 
         }
