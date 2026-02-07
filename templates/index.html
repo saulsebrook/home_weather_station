@@ -180,7 +180,9 @@
             <div class="card aircraft-card">
                 <div class="card-icon">✈️</div>
                 <div class="aircraft-label">Aircraft Currently Tracked</div>
-                <div class="aircraft-count">{{ aircraft }}</div>
+                <div class="aircraft-count">{{ aircraft['current_aircraft']['total'] }}</div>
+                <p>Max Range: {{ aircraft['current_aircraft']['max_range'] }} NM</p>
+                <p>Total Messages: {{ aircraft['current_aircraft']['total_messages'] }}</p>
                 <p style="opacity: 0.8;">Live ADS-B data from your receiver</p>
             </div>
 

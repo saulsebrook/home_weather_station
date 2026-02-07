@@ -6,17 +6,21 @@ import os
 app = Flask(__name__)
 
 DATA_FILE = '/home/pi/weather-station/sensor_data.jsonl'
-AIRCRAFT_JSON = '/run/readsb/aircraft.json'
+AIRCRAFT_JSON = '/run/readsb/stats.json'
 
 # Display Aircraft data
 def aircraft_data():
     aircraft_tracked = 0;
     with open(AIRCRAFT_JSON, 'r') as f:
         data = json.load(f);
-    for i in data['aircraft']:
-        aircraft_tracked += 1;
-        # or aircraft_tracked = len(data['aircraft']);
-    return aircraft_tracked;
+    stats = {
+        "current_aircraft":{
+            "total": data.get('aircraft_with_pos', 0),
+            "max_range": data.get('last15min', {}).get('tracks', {}).get('max_range', 0),
+            "total_messages": data.get('total', {}).get('messages_valid', {}),
+            } 
+        }
+    return stats;
 
 # Helper function to append data to JSONL file
 def save_to_jsonl(data):
