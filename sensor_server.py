@@ -5,7 +5,9 @@ import os
 
 app = Flask(__name__)
 
-DATA_FILE = '/home/pi/weather-station/sensor_data.jsonl'
+OUTSIDE = '/home/pi/weather-station/outside.jsonl'
+INSIDE = '/home/pi/weather-station/inside.jsonl'
+GARAGE = '/home/pi/weather-station/garage.jsonl'
 AIRCRAFT_JSON = '/run/readsb/stats.json'
 
 # Display Aircraft data
@@ -22,20 +24,28 @@ def aircraft_data():
             "total_messages": data.get('total', {}).get('messages_valid', {}),
             } 
         }
-    return stats;
+    return stats
 
 # Helper function to append data to JSONL file
 def save_to_jsonl(data):
-    with open(DATA_FILE, 'a') as f:
-        f.write(json.dumps(data) + '\n')
+    if data['sensor_id'] == 'OUTSIDE':    
+        with open(OUTSIDE, 'a') as f:
+            f.write(json.dumps(data) + '\n')
+    if data['sensor_id'] == 'INSIDE':    
+        with open(INSIDE, 'a') as f:
+            f.write(json.dumps(data) + '\n')
+    if data['sensor_id'] == 'GARAGE':    
+        with open(GARAGE, 'a') as f:
+            f.write(json.dumps(data) + '\n')
 
 # Helper function to get latest reading for each sensor
 def get_latest_readings():
-    if not os.path.exists(DATA_FILE):
+    if not os.path.exists(OUTSIDE) or os.path.exists(INSIDE) or os.path.exists(GARAGE):
         return {}
     
     latest = {}
-    with open(DATA_FILE, 'r') as f:
+    for filepath in [OUTSIDE, INSIDE, GARAGE]:
+     with open(filepath, 'r') as f:
         for line in f:
             data = json.loads(line.strip())
             # Skip entries without sensor_id

@@ -157,6 +157,23 @@
             font-size: 1.2em;
         }
 
+        .cards-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .card {
+            flex: 1;
+            min-width: 300px;
+            max-width: 350px;
+        }
+
+
         @media (max-width: 768px) {
             header h1 {
                 font-size: 2em;
@@ -187,12 +204,14 @@
             </div>
 
             <!-- Sensor Cards -->
+        <div class="cards-container">
             {% if sensors %}
-                {% for sensor_id, data in sensors.items() %}
+            <!-- For loop loops through all dictionary items that were returned in 'latest' -->
+                {% for sensor_id['GARAGE'], data in sensors.items() %}
                 <div class="card">
                     <div class="card-header">
                         <div class="card-icon">📡</div>
-                        <div class="card-title">House Sensor</div>
+                        <div class="card-title">{{ sensor_id }}</div>
                     </div>
                     
                     <div class="reading-item">
@@ -223,6 +242,7 @@
                     <p style="font-size: 0.9em; margin-top: 10px; opacity: 0.7;">Waiting for first readings...</p>
                 </div>
             {% endif %}
+        </div>
         </div>
     </div>
 
