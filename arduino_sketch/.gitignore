@@ -1,0 +1,25 @@
+build/
+*.elf
+*.hex
+*.bin
+*.map
+
+# Compiled files
+*.o
+*.a
+*.d
+
+# IDE files
+.vscode/
+.idea/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+data/
+
