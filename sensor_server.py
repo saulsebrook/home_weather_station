@@ -65,12 +65,21 @@ def get_latest_readings():
     
 # Helper function to get historical data for a specific sensor
 def get_sensor_history(sensor_id, limit=100):
-    if not os.path.exists(DATA_FILE):
+    file_map = {
+        'OUTSIDE' : OUTSIDE,
+        'INSIDE' : INSIDE,
+        'GARAGE' : GARAGE
+    }
+    filepath = file_map.get(sensor_id)
+    if not os.path.exists(filepath):
         return []
     
     history = []
-    with open(DATA_FILE, 'r') as f:
+    with open(filepath, 'r') as f:
         for line in f:
+            line = line.strip()
+            if not line:
+                continue
             data = json.loads(line.strip())
             # Skip entries without sensor_id
             if 'sensor_id' not in data:

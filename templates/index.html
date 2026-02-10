@@ -13,7 +13,9 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            /*background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);*/
+            background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
+
             min-height: 100vh;
             padding: 20px;
         }
@@ -118,11 +120,13 @@
 
         .aircraft-card {
             grid-column: 1 / -1;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #2C3E50 0%, #34495E 100%);
             color: white;
             text-align: center;
             padding: 40px;
             width: 100%;
+            max-width: 100%;
+            box-shadow: 0 12px 48px rgba(0,0,0,0.4);
         }
 
         .aircraft-count {
@@ -204,7 +208,7 @@
 <body>
     <div class="dashboard-container">
         <header>
-            <h1>🌤️ Weather & ADSB Dashboard</h1>
+            <h1>🌤️ Weather & ADSB Dashboard 🚁</h1>
             <p>Real-time house atmospheric monitoring & aircraft tracking</p>
         </header>
 
