@@ -1,0 +1,58 @@
+ <html>
+    <head>
+        <title>{{ sensor_id }} History</title>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            canvas { max-width: 1000px; margin: 20px 0; }
+        </style>
+    </head>
+    <body>
+        <h1>{{ sensor_id }} - Historical Data</h1>
+        <a href="/">← Back to Dashboard</a>
+        
+        <h2>Temperature</h2>
+        <canvas id="tempChart"></canvas>
+        
+        <h2>Humidity</h2>
+        <canvas id="humChart"></canvas>
+        
+        <h2>Pressure</h2>
+        <canvas id="pressChart"></canvas>
+        
+        <script>
+            const data = {{ data | tojson }};
+            const timestamps = data.map(d => new Date(d.timestamp).toLocaleString());
+            const temps = data.map(d => d.temperature);
+            const humidity = data.map(d => d.humidity);
+            const pressure = data.map(d => d.pressure);
+            
+            const chartConfig = (label, data, color) => ({
+                type: 'line',
+                data: {
+                    labels: timestamps,
+                    datasets: [{
+                        label: label,
+                        data: data,
+                        borderColor: color,
+                        backgroundColor: color + '33',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: { ticks: { maxTicksLimit: 12 } }
+                    }
+                }
+            });
+            
+            new Chart(document.getElementById('tempChart'), 
+                chartConfig('Temperature (°C)', temps, 'rgb(255, 99, 132)'));
+            new Chart(document.getElementById('humChart'), 
+                chartConfig('Humidity (%)', humidity, 'rgb(54, 162, 235)'));
+            new Chart(document.getElementById('pressChart'), 
+                chartConfig('Pressure (hPa)', pressure, 'rgb(75, 192, 192)'));
+        </script>
+    </body>
+    </html>

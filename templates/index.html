@@ -47,6 +47,13 @@
             margin-bottom: 30px;
         }
 
+        /* Container for entire page */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
         .card {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
@@ -102,12 +109,20 @@
             color: #333;
         }
 
+        /* Aircraft section - full width */
+        .aircraft-section {
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        
+
         .aircraft-card {
             grid-column: 1 / -1;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             text-align: center;
             padding: 40px;
+            width: 100%;
         }
 
         .aircraft-count {
@@ -158,19 +173,16 @@
         }
 
         .cards-container {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
+            width: 100%;
         }
 
-        .card {
+        .cards-container .card {
             flex: 1;
             min-width: 300px;
-            max-width: 350px;
+            max-width: 100%;
         }
 
 
@@ -182,32 +194,37 @@
             .aircraft-count {
                 font-size: 3em;
             }
+
+            .cards-container {
+                grid-template-columns: 1fr; /* Single column on mobile */
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="dashboard-container">
         <header>
-            <h1>🌤️ Weather & Aviation Dashboard</h1>
-            <p>Real-time environmental monitoring & aircraft tracking</p>
+            <h1>🌤️ Weather & ADSB Dashboard</h1>
+            <p>Real-time house atmospheric monitoring & aircraft tracking</p>
         </header>
 
-        <div class="dashboard-grid">
+        <div class="aircraft-section">
             <!-- Aircraft Tracking Card -->
             <div class="card aircraft-card">
                 <div class="card-icon">✈️</div>
-                <div class="aircraft-label">Aircraft Currently Tracked</div>
+                <div class="aircraft-label">Aircraft Currently Tracked via ADSB</div>
                 <div class="aircraft-count">{{ aircraft['current_aircraft']['total'] }}</div>
-                <p>Max Range: {{ aircraft['current_aircraft']['max_range'] }} NM</p>
+                <p>Max Range last 24hr: {{ aircraft['current_aircraft']['max_range'] }} NM</p>
                 <p>Total Messages: {{ aircraft['current_aircraft']['total_messages'] }}</p>
                 <p style="opacity: 0.8;">Live ADS-B data from your receiver</p>
             </div>
+        </div>
 
             <!-- Sensor Cards -->
         <div class="cards-container">
             {% if sensors %}
             <!-- For loop loops through all dictionary items that were returned in 'latest' -->
-                {% for sensor_id['GARAGE'], data in sensors.items() %}
+                {% for sensor_id, data in sensors.items() %}
                 <div class="card">
                     <div class="card-header">
                         <div class="card-icon">📡</div>
@@ -225,7 +242,7 @@
                     </div>
                     
                     <div class="reading-item">
-                        <span class="reading-label">📊 Pressure</span>
+                        <span class="reading-label">📊 Pressure QNH</span>
                         <span class="reading-value">{{ "%.1f"|format(data.pressure) }} hPa</span>
                     </div>
                     
@@ -244,13 +261,36 @@
             {% endif %}
         </div>
         </div>
-    </div>
+
 
     <script>
-        // Auto-refresh every 20 seconds
-        setTimeout(function(){
-            location.reload();
-        }, 20000);
-    </script>
+    // Format all timestamps on the page 
+    document.querySelectorAll('.timestamp').forEach(element => { 
+        const rawText = element.textContent.trim();
+        const rawTime = rawText.replace('Last update:', '').trim();
+        
+        const date = new Date(rawTime);
+        
+        // Check if date is valid
+        if (!isNaN(date.getTime())) {
+            const formatted = date.toLocaleString('en-AU', { 
+                month: 'short', 
+                day: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit', 
+                hour12: true 
+            }); 
+            element.textContent = 'Last update: ' + formatted;
+        } else {
+            console.log('Invalid timestamp:', rawTime);
+        }
+    });
+
+    // Auto-refresh every 20 seconds
+    setTimeout(function(){
+        location.reload();
+    }, 20000);
+</script>
+
 </body>
 </html>

@@ -5,14 +5,16 @@ import os
 
 app = Flask(__name__)
 
-OUTSIDE = '/home/pi/weather-station/outside.jsonl'
-INSIDE = '/home/pi/weather-station/inside.jsonl'
-GARAGE = '/home/pi/weather-station/garage.jsonl'
-AIRCRAFT_JSON = '/run/readsb/stats.json'
+# Update the following so that filepaths match your own
+
+OUTSIDE = '/Users/saulsebrook/Documents/Programming/home_weather_station/home_weather_station/data/OUTSIDE.jsonl'
+INSIDE = '/Users/saulsebrook/Documents/Programming/home_weather_station/home_weather_station/data/INSIDE.jsonl'
+GARAGE = '/Users/saulsebrook/Documents/Programming/home_weather_station/home_weather_station/data/GARAGE.jsonl'
+AIRCRAFT_JSON = '/Users/saulsebrook/Documents/Programming/home_weather_station/home_weather_station/data/stats.json'
 
 # Display Aircraft data
 def aircraft_data():
-    aircraft_tracked = 0;
+    aircraft_tracked = 0
     with open(AIRCRAFT_JSON, 'r') as f:
         data = json.load(f);
         max_distance_m = data.get('total', {}).get('max_distance', 0)
@@ -40,22 +42,27 @@ def save_to_jsonl(data):
 
 # Helper function to get latest reading for each sensor
 def get_latest_readings():
-    if not os.path.exists(OUTSIDE) or os.path.exists(INSIDE) or os.path.exists(GARAGE):
-        return {}
-    
     latest = {}
     for filepath in [OUTSIDE, INSIDE, GARAGE]:
-     with open(filepath, 'r') as f:
-        for line in f:
-            data = json.loads(line.strip())
-            # Skip entries without sensor_id
-            if 'sensor_id' not in data:
-                continue
-            sensor_id = data['sensor_id']
-            # Keep only the most recent reading for each sensor
-            if sensor_id not in latest or data['timestamp'] > latest[sensor_id]['timestamp']:
-                latest[sensor_id] = data
+        if not os.path.exists(filepath):
+            continue  
+        if os.path.getsize(filepath) == 0:
+            continue  
+        with open(filepath, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                data = json.loads(line.strip())
+                # Skip entries without sensor_id
+                if 'sensor_id' not in data:
+                    continue
+                sensor_id = data['sensor_id']
+                # Keep only the most recent reading for each sensor
+                if sensor_id not in latest or data['timestamp'] > latest[sensor_id]['timestamp']:
+                    latest[sensor_id] = data
     return latest
+    
 # Helper function to get historical data for a specific sensor
 def get_sensor_history(sensor_id, limit=100):
     if not os.path.exists(DATA_FILE):
@@ -73,19 +80,21 @@ def get_sensor_history(sensor_id, limit=100):
     
     # Return most recent entries
     return history[-limit:]
-# API endpoint - ESP32s POST data here
-@app.route('/api/sensor', methods=['POST'])
+
+# API endpoint - POST and GET requests via /api/sensor
+@app.route('/api/sensor', methods=['POST', 'GET'])
 def receive_data():
-    data = request.json
-    
-    # Add timestamp if not provided
-    if 'timestamp' not in data:
-        data['timestamp'] = datetime.now().isoformat()
-    
-    # Save to JSONL file
-    save_to_jsonl(data)
-    
-    return jsonify({'status': 'success'}), 200
+    if request.method == 'POST':
+        data = request.json
+        # Add timestamp if not provided
+        if 'timestamp' not in data:
+            data['timestamp'] = datetime.now().isoformat()
+        # Save to JSONL file
+        save_to_jsonl(data)
+        return jsonify({'status': 'success'}), 200
+    else:
+        latest = get_latest_readings()
+        return jsonify(latest), 200
 
 # Main webpage - shows current readings
 @app.route('/')
@@ -98,68 +107,7 @@ def home():
 @app.route('/history/<sensor_id>')
 def history(sensor_id):
     data = get_sensor_history(sensor_id, limit=288)  # Last 24h if reporting every 5min
-    
-    html = '''
-    <html>
-    <head>
-        <title>{{ sensor_id }} History</title>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <style>
-            body { font-family: Arial, sans-serif; margin: 20px; }
-            canvas { max-width: 1000px; margin: 20px 0; }
-        </style>
-    </head>
-    <body>
-        <h1>{{ sensor_id }} - Historical Data</h1>
-        <a href="/">← Back to Dashboard</a>
-        
-        <h2>Temperature</h2>
-        <canvas id="tempChart"></canvas>
-        
-        <h2>Humidity</h2>
-        <canvas id="humChart"></canvas>
-        
-        <h2>Pressure</h2>
-        <canvas id="pressChart"></canvas>
-        
-        <script>
-            const data = {{ data | tojson }};
-            const timestamps = data.map(d => new Date(d.timestamp).toLocaleString());
-            const temps = data.map(d => d.temperature);
-            const humidity = data.map(d => d.humidity);
-            const pressure = data.map(d => d.pressure);
-            
-            const chartConfig = (label, data, color) => ({
-                type: 'line',
-                data: {
-                    labels: timestamps,
-                    datasets: [{
-                        label: label,
-                        data: data,
-                        borderColor: color,
-                        backgroundColor: color + '33',
-                        tension: 0.1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        x: { ticks: { maxTicksLimit: 12 } }
-                    }
-                }
-            });
-            
-            new Chart(document.getElementById('tempChart'), 
-                chartConfig('Temperature (°C)', temps, 'rgb(255, 99, 132)'));
-            new Chart(document.getElementById('humChart'), 
-                chartConfig('Humidity (%)', humidity, 'rgb(54, 162, 235)'));
-            new Chart(document.getElementById('pressChart'), 
-                chartConfig('Pressure (hPa)', pressure, 'rgb(75, 192, 192)'));
-        </script>
-    </body>
-    </html>
-    '''
-    return render_template_string(html, sensor_id=sensor_id, data=data)
+    return render_template('history.html', sensor_id=sensor_id, data=data)
 
 # API endpoint to get historical data as JSON
 @app.route('/api/history/<sensor_id>')
