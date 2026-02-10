@@ -15,8 +15,8 @@
 #define MY_ALTITUDE_M 647.0
 #define SEALEVELPRESSURE_HPA (1013.25)
 
-const char* ssid = "It Burns When IP";
-const char* password = "lucy1816647";
+const char* ssid = "SSID_NAME";
+const char* password = "PASSWORD";
 
 Adafruit_BME280 bme;
 WiFiClient client;
