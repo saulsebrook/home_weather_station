@@ -7,10 +7,10 @@ app = Flask(__name__)
 
 # Update the following so that filepaths match your own
 
-OUTSIDE = '/Users/saulsebrook/Documents/Programming/home_weather_station/home_weather_station/data/OUTSIDE.jsonl'
-INSIDE = '/Users/saulsebrook/Documents/Programming/home_weather_station/home_weather_station/data/INSIDE.jsonl'
-GARAGE = '/Users/saulsebrook/Documents/Programming/home_weather_station/home_weather_station/data/GARAGE.jsonl'
-AIRCRAFT_JSON = '/Users/saulsebrook/Documents/Programming/home_weather_station/home_weather_station/data/stats.json'
+OUTSIDE = 'path_to_local.jsonl'
+INSIDE = 'path_to_local.jsonl'
+GARAGE = 'path_to_local.jsonl'
+AIRCRAFT_JSON = 'path_to_local/stats.json'
 
 # Display Aircraft data
 def aircraft_data():
