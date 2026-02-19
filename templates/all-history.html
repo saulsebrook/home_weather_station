@@ -1,1 +1,59 @@
+<html>
+<head>
+    <title>Sensor Comparison</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Sensor Comparison</h1>
+    <h2>Temperature</h2>
+    <canvas id="tempChart"></canvas>
+    <h2>Humidity</h2>
+    <canvas id="humChart"></canvas>
+    <h2>Pressure</h2>
+    <canvas id="pressChart"></canvas>
+
+    <script>
+        const allData = {{ all_data | tojson }};
+
+        const colors = {
+            'sensor1': 'rgb(255, 99, 132)',
+            'sensor2': 'rgb(54, 162, 235)',
+            'sensor3': 'rgb(75, 192, 192)'
+        };
+
+        // Use timestamps from first sensor as x-axis labels
+        const firstSensor = Object.values(allData)[0];
+        const timestamps = firstSensor.map(d => new Date(d.timestamp).toLocaleString());
+
+        function makeChart(canvasId, field, unit) {
+            const datasets = Object.entries(allData).map(([sensorId, data]) => ({
+                label: sensorId,
+                data: data.map(d => d[field]),
+                borderColor: colors[sensorId],
+                backgroundColor: colors[sensorId] + '33',
+                tension: 0.1
+            }));
+
+            new Chart(document.getElementById(canvasId), {
+                type: 'line',
+                data: { labels: timestamps, datasets },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { position: 'top' }
+                    },
+                    scales: {
+                        x: { ticks: { maxTicksLimit: 12 } },
+                        y: { title: { display: true, text: unit } }
+                    }
+                }
+            });
+        }
+
+        makeChart('tempChart', 'temperature', '°C');
+        makeChart('humChart', 'humidity', '%');
+        makeChart('pressChart', 'pressure', 'hPa');
+    </script>
+</body>
+</html>
 
