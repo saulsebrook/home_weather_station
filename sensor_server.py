@@ -118,6 +118,13 @@ def history(sensor_id):
     data = get_sensor_history(sensor_id, limit=288)  # Last 24h if reporting every 5min
     return render_template('history.html', sensor_id=sensor_id, data=data)
 
+@app.route('/history')
+def history():
+    all_data = {}
+    for sensor_id in ['INSIDE', 'OUTSIDE', 'GARAGE']:
+        all_data[sensor_id] = get_sensor_history(sensor_id, limit=576)  # Last 48h if reporting every 5min
+    return render_template('all-history.html', sensor_id=sensor_id, all_data=all_data)
+
 # API endpoint to get historical data as JSON
 @app.route('/api/history/<sensor_id>')
 def api_history(sensor_id):
