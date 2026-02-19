@@ -11,6 +11,9 @@ OUTSIDE = 'path_to_local.jsonl'
 INSIDE = 'path_to_local.jsonl'
 GARAGE = 'path_to_local.jsonl'
 AIRCRAFT_JSON = 'path_to_local/stats.json'
+BATT = 'path_to_local.json'
+
+def read
 
 # Display Aircraft data
 def aircraft_data():
@@ -40,6 +43,19 @@ def save_to_jsonl(data):
         with open(GARAGE, 'a') as f:
             f.write(json.dumps(data) + '\n')
 
+def batt_history():
+    if not os.path.exists(BATT):
+        return[]
+    with open(BATT, 'r') as f:
+        return json.load(f)
+
+def write_batt(data):
+    history = batt_history()
+    history.append({'level': data['level'], 'value': data['value'], data['timestamp']})
+    history = history[-100:]
+    with open(BATT, 'w') as f:
+        json.dump(history, f, indent=2)
+        
 # Helper function to get latest reading for each sensor
 def get_latest_readings():
     latest = {}
@@ -105,6 +121,18 @@ def receive_data():
         latest = get_latest_readings()
         return jsonify(latest), 200
 
+@app.route('/api/batt', methods=['POST'])
+def receive_batt():
+    data = request.json
+    if not data:
+        return jsonify({'status', 'fail'}), 400
+        # Add timestamp if not provided
+    if 'timestamp' not in data:
+        data['timestamp'] = datetime.now().isoformat()
+    # Save to JSONL file
+    write_batt(data)
+    return jsonify({'status': 'success'}), 200
+
 # Main webpage - shows current readings
 @app.route('/')
 def home():
@@ -131,6 +159,13 @@ def api_history(sensor_id):
     limit = request.args.get('limit', 100, type=int)
     data = get_sensor_history(sensor_id, limit)
     return jsonify(data)
+
+@app.route('/batt')
+def batt_lvl():
+    history = batt_history()
+    if not history:
+        return jsonify({'error': 'No battery data'})
+    return jsonify(history[-1])
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
