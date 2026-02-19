@@ -23,6 +23,13 @@ WiFiClient client;
 HTTPClient http;
 
 void sendPi(){
+  bme.setSampling(Adafruit_BME280::MODE_FORCED,
+                    Adafruit_BME280::SAMPLING_X1, // temperature
+                    Adafruit_BME280::SAMPLING_X1, // pressure
+                    Adafruit_BME280::SAMPLING_X1, // humidity
+                    Adafruit_BME280::FILTER_OFF   );
+  bme.takeForcedMeasurement();
+  //Variables
   float seaLevelPressure = bme.seaLevelForAltitude(MY_ALTITUDE_M, bme.readPressure() / 100.0F);
   float temp = bme.readTemperature();
   float humidity = bme.readHumidity();
@@ -71,46 +78,65 @@ void printValues(){
     Serial.println(" m");
 }
 
-void setup() {
-  delay(50);
-  Serial.begin(115200);
-  Wire.begin(); // Begin I2C
+void wifiConnect(){
+  int attempts = 0;
+  const int maxAttempts = 20;
   WiFi.begin(ssid, password);
   Serial.println("");
-
-// Wait for a conection
   while (WiFi.status() != WL_CONNECTED) { // While wifi.status is not equal to connected
+    if(attempts > maxAttempts){
+      Serial.println("\nUnable to establish WIFI connection. Connection timeout.");
+      for(int i = 0; i < 10; i++){
+        digital.Write(GPIO3, HIGH);// Flash red LED indefinitely to signify unable WIFI connection
+        delay(500);
+        digital.Write(GPIO3, LOW);
+        delay(500);
+      }
+      ESP.deepSleep(600e6);
+    }
     delay(500);
     Serial.print(".");
+    attempts++;
   }
-
-// Connection established
+  // Connection established
   Serial.println("");
   Serial.print("Connected to ");
   Serial.println(ssid);
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
- 
+
+void I2C(){
+  Wire.begin(); // Begin I2C
+  String address = "0x77";
   unsigned status = bme.begin(0x77);
   if(!status){
+    String address = "0x76";
     status = bme.begin(0x76);
     if(!status){
       Serial.println("Cannot communicate via I2C, addresses 0x76 and 0x77 unsuccessful");
+      while(true){// Fast flash red and green LED indefinitely to signify that I2C sensor connection failed
+        digital.Write(GPIO1, HIGH);
+        digital.Write(GPIO3, LOW);
+        delay(200);
+        digital.Write(GPIO1, LOW);
+        digital.Write(GPIO3, HIGH);
+        delay(200);
     }
   }
   Serial.print("Connected to I2C via address ");
   Serial.println(status);
-  
-  bme.setSampling(Adafruit_BME280::MODE_FORCED,
-                    Adafruit_BME280::SAMPLING_X1, // temperature
-                    Adafruit_BME280::SAMPLING_X1, // pressure
-                    Adafruit_BME280::SAMPLING_X1, // humidity
-                    Adafruit_BME280::FILTER_OFF   );
+}
+
+void setup() {
+  delay(50);
+  Serial.begin(115200);
+  pinMode(GPIO1, OUTPUT);
+  pinMode(GPIO3, OUTPUT);
+  wifiConnect();
+  I2C();  
 }
 
 void loop() {
-  bme.takeForcedMeasurement();
   sendPi();
   ESP.deepSleep(600e6);
-
 }
