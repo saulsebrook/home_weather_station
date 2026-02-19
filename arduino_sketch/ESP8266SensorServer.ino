@@ -72,6 +72,7 @@ void printValues(){
 }
 
 void setup() {
+  delay(50);
   Serial.begin(115200);
   Wire.begin(); // Begin I2C
   WiFi.begin(ssid, password);
@@ -91,6 +92,15 @@ void setup() {
   Serial.println(WiFi.localIP());
  
   unsigned status = bme.begin(0x77);
+  if(!status){
+    status = bme.begin(0x76);
+    if(!status){
+      Serial.println("Cannot communicate via I2C, addresses 0x76 and 0x77 unsuccessful");
+    }
+  }
+  Serial.print("Connected to I2C via address ");
+  Serial.println(status);
+  
   bme.setSampling(Adafruit_BME280::MODE_FORCED,
                     Adafruit_BME280::SAMPLING_X1, // temperature
                     Adafruit_BME280::SAMPLING_X1, // pressure
