@@ -127,8 +127,37 @@ void I2C(){
   Serial.println(status);
 }
 
+void POST_batt(int level, float value){
+  http.begin(client, PI_API);
+  http.addHeader("Content-Type", "application/json");
+
+  String payload = "{";
+  payload += "\"level\":";
+  payload += String(level);
+  payload += ",\"value\":";
+  payload += String(value);
+  payload += "}";
+  
+  Serial.println(payload);
+  int httpCode = http.POST(payload);
+  
+  if (httpCode > 0) {
+      Serial.printf("[HTTP] POST... code: %d\n", httpCode);
+      String response = http.getString();
+      Serial.println(response);
+  } else {
+      Serial.printf("[HTTP] POST... failed, error: %s\n", http.errorToString(httpCode).c_str());
+  }
+  http.end();
+}
+
+read_batt(){
+ //TODO
+}
+
 void setup() {
   delay(50);
+  /* read_batt(); */
   Serial.begin(115200);
   pinMode(GPIO1, OUTPUT);
   pinMode(GPIO3, OUTPUT);
