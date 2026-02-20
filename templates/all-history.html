@@ -16,9 +16,9 @@
         const allData = {{ all_data | tojson }};
 
         const colors = {
-            'sensor1': 'rgb(255, 99, 132)',
-            'sensor2': 'rgb(54, 162, 235)',
-            'sensor3': 'rgb(75, 192, 192)'
+            'INSIDE': 'rgb(255, 99, 132)',
+            'OUTSIDE': 'rgb(54, 162, 235)',
+            'GARAGE': 'rgb(75, 192, 192)'
         };
 
         // Use timestamps from first sensor as x-axis labels
@@ -44,7 +44,10 @@
                     },
                     scales: {
                         x: { ticks: { maxTicksLimit: 12 } },
-                        y: { title: { display: true, text: unit } }
+y: { 
+        title: { display: true, text: unit },
+        grace: '20%'
+    }
                     }
                 }
             });
