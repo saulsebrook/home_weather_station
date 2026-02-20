@@ -10,13 +10,14 @@
 #include <Adafruit_BME280.h>
 #include <Wire.h>
 #include <ESP8266HTTPClient.h>
+#include <Arduino.h>
 
 #define PI_API "http://192.168.1.133:5000/api/sensor"
 #define MY_ALTITUDE_M 647.0
 #define SEALEVELPRESSURE_HPA (1013.25)
 
-const char* ssid = "SSID_NAME";
-const char* password = "PASSWORD";
+const char* ssid = "It Burns When IP";
+const char* password = "lucy1816647";
 
 Adafruit_BME280 bme;
 WiFiClient client;
@@ -45,7 +46,7 @@ void sendPi(){
   http.addHeader("Content-Type", "application/json");
 
   String payload = "{";
-  payload += "\"sensor_id\":\"ESP8266_BME280\",";  // Add sensor_id
+  payload += "\"sensor_id\":\"GARAGE\",";  // Add sensor_id
   payload += "\"temperature\":";
   payload += String(temp);
   payload += ",\"humidity\":";
@@ -79,24 +80,10 @@ void printValues(){
 }
 
 void wifiConnect(){
-  int attempts = 0;
-  const int maxAttempts = 20;
   WiFi.begin(ssid, password);
   Serial.println("");
   while (WiFi.status() != WL_CONNECTED) { // While wifi.status is not equal to connected
-    if(attempts > maxAttempts){
-      Serial.println("\nUnable to establish WIFI connection. Connection timeout.");
-      for(int i = 0; i < 10; i++){
-        digital.Write(GPIO3, HIGH);// Flash red LED indefinitely to signify unable WIFI connection
-        delay(500);
-        digital.Write(GPIO3, LOW);
-        delay(500);
-      }
-      ESP.deepSleep(600e6);
-    }
-    delay(500);
     Serial.print(".");
-    attempts++;
   }
   // Connection established
   Serial.println("");
@@ -104,6 +91,7 @@ void wifiConnect(){
   Serial.println(ssid);
   Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
+}
 
 void I2C(){
   Wire.begin(); // Begin I2C
@@ -115,13 +103,14 @@ void I2C(){
     if(!status){
       Serial.println("Cannot communicate via I2C, addresses 0x76 and 0x77 unsuccessful");
       while(true){// Fast flash red and green LED indefinitely to signify that I2C sensor connection failed
-        digital.Write(GPIO1, HIGH);
-        digital.Write(GPIO3, LOW);
+        digitalWrite(D5, HIGH);
+        digitalWrite(D6, LOW);
         delay(200);
-        digital.Write(GPIO1, LOW);
-        digital.Write(GPIO3, HIGH);
+        digitalWrite(D5, LOW);
+        digitalWrite(D6, HIGH);
         delay(200);
     }
+  }
   }
   Serial.print("Connected to I2C via address ");
   Serial.println(status);
@@ -151,7 +140,7 @@ void POST_batt(int level, float value){
   http.end();
 }
 
-read_batt(){
+void read_batt(){
  //TODO
 }
 
@@ -159,13 +148,13 @@ void setup() {
   delay(50);
   /* read_batt(); */
   Serial.begin(115200);
-  pinMode(GPIO1, OUTPUT);
-  pinMode(GPIO3, OUTPUT);
+  pinMode(D5, OUTPUT);
+  pinMode(D6, OUTPUT);
   wifiConnect();
   I2C();  
 }
 
 void loop() {
   sendPi();
-  ESP.deepSleep(600e6);
+  ESP.deepSleep(180e6);
 }
