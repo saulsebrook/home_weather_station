@@ -2,6 +2,8 @@
 <head>
     <title>Sensor Comparison</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
 </head>
 <body>
     <h1>Sensor Comparison</h1>
@@ -22,37 +24,37 @@
         };
 
         // Use timestamps from first sensor as x-axis labels
-        const firstSensor = Object.values(allData)[0];
-        const timestamps = firstSensor.map(d => new Date(d.timestamp).toLocaleString());
 
-        function makeChart(canvasId, field, unit) {
-            const datasets = Object.entries(allData).map(([sensorId, data]) => ({
-                label: sensorId,
-                data: data.map(d => d[field]),
-                borderColor: colors[sensorId],
-                backgroundColor: colors[sensorId] + '33',
-                tension: 0.1
-            }));
-
-            new Chart(document.getElementById(canvasId), {
-                type: 'line',
-                data: { labels: timestamps, datasets },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { position: 'top' }
-                    },
-                    scales: {
-                        x: { ticks: { maxTicksLimit: 12 } },
-y: { 
-        title: { display: true, text: unit },
-        grace: '20%'
-    }
-                    }
+function makeChart(canvasId, field, unit) {
+    const datasets = Object.entries(allData).map(([sensorId, data], index) => ({
+        label: sensorId,
+        data: data.map(d => ({ x: new Date(d.timestamp), y: d[field] })),
+        borderColor: colors[sensorId],
+        backgroundColor: colors[sensorId] + '33',
+        tension: 0.1
+    }));
+    new Chart(document.getElementById(canvasId), {
+        type: 'line',
+        data: { datasets },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' }
+            },
+            scales: {
+                x: { 
+                    type: 'time',
+                    time: { tooltipFormat: 'dd/MM/yyyy HH:mm' },
+                    ticks: { maxTicksLimit: 12 }
+                },
+                y: { 
+                    title: { display: true, text: unit },
+                    grace: '20%'
                 }
-            });
+            }
         }
-
+    });
+}
         makeChart('tempChart', 'temperature', '°C');
         makeChart('humChart', 'humidity', '%');
         makeChart('pressChart', 'pressure', 'hPa');
