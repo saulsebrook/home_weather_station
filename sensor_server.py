@@ -7,13 +7,12 @@ app = Flask(__name__)
 
 # Update the following so that filepaths match your own
 
-OUTSIDE = 'path_to_local.jsonl'
-INSIDE = 'path_to_local.jsonl'
-GARAGE = 'path_to_local.jsonl'
-AIRCRAFT_JSON = 'path_to_local/stats.json'
-BATT = 'path_to_local.json'
+OUTSIDE = '/home/pi/weather-station/OUTSIDE.jsonl'
+INSIDE = '/home/pi/weather-station/INSIDE.jsonl'
+GARAGE = '/home/pi/weather-station/GARAGE.jsonl'
+AIRCRAFT_JSON = '/run/readsb/stats.json'
+BATT = '/home/pi/weather-station/BATT.json'
 
-def read
 
 # Display Aircraft data
 def aircraft_data():
@@ -51,7 +50,7 @@ def batt_history():
 
 def write_batt(data):
     history = batt_history()
-    history.append({'level': data['level'], 'value': data['value'], data['timestamp']})
+    history.append({'level': data['level'], 'value': data['value'], 'timestamp': data['timestamp']})
     history = history[-100:]
     with open(BATT, 'w') as f:
         json.dump(history, f, indent=2)
@@ -146,8 +145,8 @@ def history(sensor_id):
     data = get_sensor_history(sensor_id, limit=288)  # Last 24h if reporting every 5min
     return render_template('history.html', sensor_id=sensor_id, data=data)
 
-@app.route('/history')
-def history():
+@app.route('/history-data')
+def history_data():
     all_data = {}
     for sensor_id in ['INSIDE', 'OUTSIDE', 'GARAGE']:
         all_data[sensor_id] = get_sensor_history(sensor_id, limit=576)  # Last 48h if reporting every 5min
