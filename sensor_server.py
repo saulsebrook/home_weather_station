@@ -137,8 +137,8 @@ def receive_batt():
 def home():
     sensors = get_latest_readings()
     aircraft = aircraft_data()
-    battery = batt_history()
-    battery = history[-1] if history else None
+    batt_data = batt_history()
+    battery = batt_data[-1] if batt_data else None
     return render_template('index.html', battery=battery, sensors=sensors, aircraft=aircraft)
 
 # History page with simple graph
