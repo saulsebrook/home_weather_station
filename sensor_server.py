@@ -11,7 +11,7 @@ OUTSIDE = '/home/pi/weather-station/OUTSIDE.jsonl'
 INSIDE = '/home/pi/weather-station/INSIDE.jsonl'
 GARAGE = '/home/pi/weather-station/GARAGE.jsonl'
 AIRCRAFT_JSON = '/run/readsb/stats.json'
-BATT = 'path_to_local.json'
+BATT = '/home/pi/weather-station/BATT.json'
 
 
 # Display Aircraft data
