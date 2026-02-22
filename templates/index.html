@@ -240,6 +240,18 @@
                         <span class="reading-label">🌡️ Temperature</span>
                         <span class="reading-value">{{ "%.1f"|format(data.temperature) }}°C</span>
                     </div>
+
+                    <div class="reading-item">
+                        <span class="reading-label">🥶 Feels Like 🥵</span>
+                        <span class="reading-value">
+                        {% if feels_like is not none %}
+                            {{ "%.1f"|format(feels_like) }}°C
+                        {% else %}
+                            No data
+                        {% endif %}
+                        </span>
+                    </div>
+                    
                     
                     <div class="reading-item">
                         <span class="reading-label">💧 Humidity</span>
