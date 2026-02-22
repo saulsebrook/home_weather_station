@@ -29,7 +29,6 @@ def get_wind_speed():
     params = {
         "latitude": -27.5,
         "longitude": 151.94,
-        "models": "bom_access_global",
         "current": "wind_speed_10m",
         "timezone": "Australia/Sydney",
         "forecast_days": 1,
