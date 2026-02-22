@@ -223,7 +223,7 @@ def home():
 # History page with simple graph
 @app.route('/history/<sensor_id>')
 def history(sensor_id):
-    data = get_sensor_history(sensor_id, limit=288)  # Last 24h if reporting every 5min
+    data = get_sensor_history(sensor_id, limit=576)  # Last 24h if reporting every 5min
     return render_template('history.html', sensor_id=sensor_id, data=data)
 
 @app.route('/history-data')
