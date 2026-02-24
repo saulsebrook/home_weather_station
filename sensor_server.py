@@ -17,6 +17,8 @@ GARAGE = '/home/pi/weather-station/GARAGE.jsonl'
 AIRCRAFT_JSON = '/run/readsb/stats.json'
 STATS = '/home/pi/weather-station/STATS.json'
 BATT = '/home/pi/weather-station/BATT.json'
+INIT_CONFIG = {'max_temp': 20, 'min_temp': 20, 'aircraft_max_distance': 200}
+
 
 def get_wind_speed():
     # Setup the Open-Meteo API client with cache and retry on error
@@ -108,6 +110,35 @@ def aircraft_data():
         }
     return stats
 
+def save_stats(data):
+    updated = False
+    aircraft_stats = aircraft_data()
+    if not os.path.exists(STATS):
+        with open(STATS, 'w') as f:
+            json.dump(INIT_CONFIG, f, indent=2)
+    with open(STATS, 'r') as f:
+        stats = json.load(f)
+
+    if data['sensor_id'] == 'OUTSIDE':
+        with open(OUTSIDE, 'r') as f:
+            outside = json.load(f)
+
+        if outside['temperature'] > stats['max_temp']:
+            stats['max_temp'] = outside['temperature']
+            updated = True
+        if outside['temperature'] < stats['min_temp']:
+            stats['min_temp'] = outside['temperature']
+            updated = True
+        
+    if stats['aircraft_max_distance'] < aircraft_stats['current_aircraft']['max_range']:
+        stats['aircraft_max_distance'] = aircraft_stats['current_aircraft']['max_range']
+        updated = True
+
+    if updated:
+        with open(STATS, 'w') as f:
+            json.dump(stats, f, indent=2)
+
+
 # Helper function to append data to JSONL file
 def save_to_jsonl(data):
     if data['sensor_id'] == 'OUTSIDE':    
@@ -193,6 +224,7 @@ def receive_data():
             data['timestamp'] = datetime.now().isoformat()
         # Save to JSONL file
         save_to_jsonl(data)
+        save_stats(data)
         return jsonify({'status': 'success'}), 200
     else:
         latest = get_latest_readings()
