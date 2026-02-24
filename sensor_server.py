@@ -15,6 +15,7 @@ OUTSIDE = '/home/pi/weather-station/OUTSIDE.jsonl'
 INSIDE = '/home/pi/weather-station/INSIDE.jsonl'
 GARAGE = '/home/pi/weather-station/GARAGE.jsonl'
 AIRCRAFT_JSON = '/run/readsb/stats.json'
+STATS = '/home/pi/weather-station/STATS.json'
 BATT = '/home/pi/weather-station/BATT.json'
 
 def get_wind_speed():

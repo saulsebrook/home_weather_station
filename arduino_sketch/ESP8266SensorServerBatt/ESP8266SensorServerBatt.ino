@@ -5,7 +5,6 @@
 #include <ESP8266mDNS.h>
 #include <LittleFS.h>
 #include <ArduinoJson.h>
-#include <SPI.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BME280.h>
 #include <Wire.h>
@@ -23,12 +22,16 @@ const char* password = "lucy1816647";
 int level;
 float voltage;
 int ADC;
+float temp;
+float humidity;
+float pressure;
+float seaLevelPressure;
 
 Adafruit_BME280 bme;
 WiFiClient client;
 HTTPClient http;
 
-void sendPi(){
+void read_sensor(){
   bme.setSampling(Adafruit_BME280::MODE_FORCED,
                     Adafruit_BME280::SAMPLING_X1, // temperature
                     Adafruit_BME280::SAMPLING_X1, // pressure
@@ -46,12 +49,18 @@ void sendPi(){
     Serial.println("ERROR: Invalid sensor readings!");
     return;
   }
-  
+  Serial.println(temp);
+  Serial.println(humidity);
+  Serial.println(pressure);
+}
+
+void sendPi(){
+  read_sensor();  
   http.begin(client, PI_API);
   http.addHeader("Content-Type", "application/json");
 
   String payload = "{";
-  payload += "\"sensor_id\":\"OUTSIDE\",";  // Add sensor_id
+  payload += "\"sensor_id\":\"TEST\",";  // Add sensor_id
   payload += "\"temperature\":";
   payload += String(temp);
   payload += ",\"humidity\":";
@@ -180,15 +189,19 @@ float batteryVoltageToPercent(float voltage) {
 
 void read_batt(){
   delay(20);
+  digitalWrite(D6, HIGH);
+  Serial.println("Setting D6 HIGH");
   int raw = 0;
   for(int i = 0; i < 10; i++){
     raw += analogRead(A0);
   }
   ADC = raw / 10;
-  voltage = (ADC / 1023.0) * 3.3 / 0.1993;
+  voltage = (ADC / 1023.0) * 3.3 /  0.1993;
   level = batteryVoltageToPercent(voltage);
   Serial.println(voltage);
   Serial.println(level);
+  delay(50);
+  digitalWrite(D6, LOW);
 }
 
 void setup() {  
@@ -199,6 +212,7 @@ void setup() {
   pinMode(D6, OUTPUT);
   wifiConnect();
   I2C();  
+  //read_sensor(); // For troubleshooting
 }
 
 void loop() {
