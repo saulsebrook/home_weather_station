@@ -216,7 +216,7 @@
         <div class="aircraft-section">
             <!-- Aircraft Tracking Card -->
             <div class="card aircraft-card">
-                <div class="card-icon"></div>
+                <div class="card-icon">✈️</div>
                 <div class="aircraft-label">Aircraft Currently Tracked via ADSB</div>
                 <div class="aircraft-count">{{ aircraft['current_aircraft']['total'] }}</div>
                 <p>Max Range recorded: {{ stats.aircraft_max_distance }} NM</p>
@@ -224,8 +224,8 @@
                 <p style="opacity: 0.6;">Live ADS-B data from your receiver</p>
                 <div class="card-icon">⛅️</div>
                 <div class="aircraft-label">Home Weather Stats</div>
-                <div class="aircraft-count">Hottest Temperature Recorded: {{ stats.max_temp }} at {{ stats.max_temp_date }}</div>
-                <div class="aircraft-count">Coldest Temperature Recorded: {{ stats.min_temp }} at {{ stats.min_temp_date }}</div>
+                <p>Hottest Temperature Recorded: {{ stats.max_temp }} at {{ stats.max_temp_date }}</p>
+                <p>Coldest Temperature Recorded: {{ stats.min_temp }} at {{ stats.min_temp_date }}</p>
             </div>
         </div>
 
