@@ -43,12 +43,13 @@ def receive_batt():
 # Main webpage - shows current readings
 @app.route('/')
 def home():
+    stats = get_stats()
     sensors = get_latest_readings()
     aircraft = aircraft_data()
     batt_data = batt_history()
     battery = batt_data[-1] if batt_data else None
     feels_like = calculate_feelsLike()
-    return render_template('index.html', battery=battery, sensors=sensors, aircraft=aircraft, feels_like=feels_like)
+    return render_template('index.html', battery=battery, stats=stats, sensors=sensors, aircraft=aircraft, feels_like=feels_like)
 
 # History page with simple graph
 @app.route('/history/<sensor_id>')

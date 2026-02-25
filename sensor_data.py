@@ -132,3 +132,13 @@ def get_sensor_history(sensor_id, limit=100):
     
     # Return most recent entries
     return history[-limit:]
+
+def get_stats():
+    if not os.path.exists(STATS):
+        return {}
+
+    with open(STATS, 'r') as f:
+        stats = json.load(f)
+
+    return stats
+

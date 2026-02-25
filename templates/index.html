@@ -216,12 +216,16 @@
         <div class="aircraft-section">
             <!-- Aircraft Tracking Card -->
             <div class="card aircraft-card">
-                <div class="card-icon">✈️</div>
+                <div class="card-icon"></div>
                 <div class="aircraft-label">Aircraft Currently Tracked via ADSB</div>
                 <div class="aircraft-count">{{ aircraft['current_aircraft']['total'] }}</div>
-                <p>Max Range last 24hr: {{ aircraft['current_aircraft']['max_range'] }} NM</p>
+                <p>Max Range recorded: {{ stats.aircraft_max_distance }} NM</p>
                 <p>Total Messages: {{ aircraft['current_aircraft']['total_messages'] }}</p>
-                <p style="opacity: 0.8;">Live ADS-B data from your receiver</p>
+                <p style="opacity: 0.6;">Live ADS-B data from your receiver</p>
+                <div class="card-icon">⛅️</div>
+                <div class="aircraft-label">Home Weather Stats</div>
+                <div class="aircraft-count">Hottest Temperature Recorded: {{ stats.max_temp }} at {{ stats.max_temp_date }}</div>
+                <div class="aircraft-count">Coldest Temperature Recorded: {{ stats.min_temp }} at {{ stats.min_temp_date }}</div>
             </div>
         </div>
 
@@ -309,7 +313,6 @@
                     </div>
                     
                     <a href="/history/{{ sensor_id }}" class="view-history">📈 View History</a>
-            <a href="/history-data" class="view-history" style="margin-left: 8px;">📊 Sensor Data History Combined</a>
                 </div>
                  {% endif %}
                 {% endfor %}
