@@ -5,6 +5,8 @@ import os
 import openmeteo_requests
 import pandas as pd
 import requests_cache
+from sensor_data import *
+from config_py import *
 from retry_requests import retry
 
 def get_wind_speed():

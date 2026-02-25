@@ -5,8 +5,8 @@ import os
 import openmeteo_requests
 import pandas as pd
 import requests_cache
-import weather_calc
-import config
+from weather_calc import *
+from config_py import *
 from retry_requests import retry
 
 # Display Aircraft data
