@@ -36,15 +36,12 @@ def save_stats(data):
         stats = json.load(f)
 
     if data['sensor_id'] == 'OUTSIDE':
-        with open(OUTSIDE, 'r') as f:
-            outside = json.load(f)
-
-        if outside['temperature'] > stats['max_temp']:
-            stats['max_temp'] = outside['temperature']
+        if data['temperature'] > stats['max_temp']:
+            stats['max_temp'] = data['temperature']
             stats['max_temp_date'] = today
             updated = True
-        if outside['temperature'] < stats['min_temp']:
-            stats['min_temp'] = outside['temperature']
+        if data['temperature'] < stats['min_temp']:
+            stats['min_temp'] = data['temperature']
             stats['min_temp_date'] = today
             updated = True
         
