@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, render_template_string, render_templa
 from datetime import datetime
 import json
 import os
+import math
 import openmeteo_requests
 import pandas as pd
 import requests_cache
@@ -33,21 +34,20 @@ def get_wind_speed():
 
 def calculate_feelsLike():
     """
-    Calculate feels-like temperature.
-    - Below 27°C: Wind Chill (uses wind speed)
-    - At or above 27°C: Heat Index (uses humidity)
+    Calculate apparent temperature using the Australian BOM formula,
+    which accounts for wind speed, humidity, and temperature together.
     
-    Args:
-        temp_c: Temperature in Celsius
-        humidity: Relative humidity (0-100)
-        wind_speed_kmh: Wind speed in km/h
+    Formula: AT = Ta + 0.33*e - 0.70*ws - 4.00
+    Where:
+        Ta = air temperature (°C)
+        e  = water vapour pressure (hPa)
+        ws = wind speed (m/s) at 10m height
     
     Returns:
-        Feels-like temperature in Celsius
+        Apparent temperature in Celsius
     """
     latest = get_latest_readings()
     outside = latest.get('OUTSIDE')
-
     if not outside:
         return None
 
@@ -59,27 +59,13 @@ def calculate_feelsLike():
     except Exception:
         wind_speed_kmh = 0
 
-    if temp_c >= 27:
-        # Heat Index (Steadman's formula, adapted for Celsius)
-        T = temp_c
-        R = humidity
-        hi = (-8.78469475556
-              + 1.61139411 * T
-              + 2.33854883889 * R
-              - 0.14611605 * T * R
-              - 0.012308094 * T**2
-              - 0.016424828 * R**2
-              + 0.002211732 * T**2 * R
-              + 0.00072546 * T * R**2
-              - 0.000003582 * T**2 * R**2)
-        return round(hi, 1)
-    else:
-        # Wind Chill (JAG/TI formula, valid for temp <= 10°C and wind > 4.8 km/h)
-        # Falls back to actual temp if wind is too low
-        if wind_speed_kmh < 4.8 or temp_c > 10:
-            return round(temp_c, 1)
-        wc = (13.12
-              + 0.6215 * temp_c
-              - 11.37 * wind_speed_kmh**0.16
-              + 0.3965 * temp_c * wind_speed_kmh**0.16)
-        return round(wc, 1)
+    # Convert wind speed from km/h to m/s
+    wind_speed_ms = wind_speed_kmh / 3.6
+
+    # Water vapour pressure (hPa) using the Magnus approximation
+    e = (humidity / 100.0) * 6.105 * math.exp((17.27 * temp_c) / (237.7 + temp_c))
+
+    # BOM Apparent Temperature formula
+    at = temp_c + (0.33 * e) - (0.70 * wind_speed_ms) - 4.00
+
+    return round(at, 1)
