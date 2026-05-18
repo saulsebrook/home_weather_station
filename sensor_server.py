@@ -38,6 +38,66 @@ def airband():
                                capture_output=True, text=True)
         return jsonify({'status': result.stdout.strip()})
 
+@app.route('/api/airband/custom', methods=['POST'])
+def airband_custom():
+    data = request.json
+    raw_freqs = data.get('freq', '')
+    raw_labels = data.get('label', '')
+
+    if not raw_freqs:
+        return jsonify({'status': 'error', 'message': 'No frequency provided'}), 400
+
+    freqs = [f.strip() for f in raw_freqs.split(',') if f.strip()]
+
+    if raw_labels:
+        labels = [l.strip() for l in raw_labels.split(',') if l.strip()]
+        while len(labels) < len(freqs):
+            labels.append(f'{freqs[len(labels)]} MHz')
+    else:
+        labels = [f'{f} MHz' for f in freqs]
+
+    freqs_str = ', '.join(freqs)
+    labels_str = ', '.join(f'"{l}"' for l in labels)
+    name = raw_labels if raw_labels else freqs_str
+
+    config_content = f"""devices:
+(
+    {{
+        type = "rtlsdr";
+        serial = "AIRBAND";
+        gain = 29.0;
+        mode = "scan";
+        channels: (
+            {{
+                freqs = ({freqs_str});
+                labels = ( {labels_str} );
+                modulation = "am";
+                outputs: (
+                    {{
+                        type = "icecast";
+                        server = "192.168.1.133";
+                        port = 8000;
+                        mountpoint = "custom.mp3";
+                        send_scan_freq_tags = true;
+                        username = "source";
+                        password = "password";
+                        name = "{name}";
+                        description = "Custom: {freqs_str}";
+                    }}
+                );
+            }}
+        );
+    }}
+);
+"""
+
+    with open(CUSTOM_CONF_PATH, 'w') as f:
+        f.write(config_content)
+
+    subprocess.run(['sudo', 'ln', '-sf', CUSTOM_CONF_PATH, AIRBAND_ACTIVE_CONFIG])
+    subprocess.run(['sudo', 'systemctl', 'restart', 'rtl_airband'])
+
+    return jsonify({'status': 'success', 'freqs': freqs, 'labels': labels})
 
 
 # API endpoint - POST and GET requests via /api/sensor
