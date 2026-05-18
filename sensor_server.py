@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify, render_template_string, render_template
 from datetime import datetime
+import subprocess
 import json
 import os
 import openmeteo_requests
@@ -11,6 +12,33 @@ from config_py import *
 from retry_requests import retry
 
 app = Flask(__name__)
+
+AIRBAND_ACTIVE_CONFIG = "/usr/local/etc/rtl_airband_active.conf"
+CUSTOM_CONF_PATH = "/usr/local/etc/rtl_airband_custom.conf"
+
+AIRBAND_CONFIGS = {
+    "All_freq": "/usr/local/etc/rtl_airband_CTR_E_W_CTAF.conf",
+    "TWB_CTAF": "/usr/local/etc/rtl_airband_CTAF.conf",
+    "YBOK": "/usr/local/etc/rtl_airband_YBOK.conf",
+    # Add more preset configs here as you create them
+}
+
+@app.route('/api/airband', methods=['GET', 'POST'])
+def airband():
+    if request.method == 'POST':
+        config_name = request.json.get('config')
+        if config_name not in AIRBAND_CONFIGS:
+            return jsonify({'status': 'error', 'message': 'Unknown config'}), 400
+        config_path = AIRBAND_CONFIGS[config_name]
+        subprocess.run(['sudo', 'ln', '-sf', config_path, AIRBAND_ACTIVE_CONFIG])
+        subprocess.run(['sudo', 'systemctl', 'restart', 'rtl_airband'])
+        return jsonify({'status': 'success', 'config': config_name})
+    else:
+        result = subprocess.run(['sudo', 'systemctl', 'is-active', 'rtl_airband'],
+                               capture_output=True, text=True)
+        return jsonify({'status': result.stdout.strip()})
+
+
 
 # API endpoint - POST and GET requests via /api/sensor
 @app.route('/api/sensor', methods=['POST', 'GET'])
