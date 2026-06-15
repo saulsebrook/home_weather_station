@@ -1,7 +1,7 @@
 const ATC_DATA = [
   // ── CLASS C ──
   {
-    classes: ['C'], type: 'clearance', title: 'IFR Clearance — Controlled Airport',
+    classes: ['C'], type: 'clearance', title: 'IFR Clearance — Class C',
     note: 'Request clearance from Delivery before start. Read back all items.',
     format: '[ATC Delivery], [Callsign], [Aircraft Type], [MEDEVAC if applicable], for [Destination], request clearance',
     examples: [
@@ -10,7 +10,7 @@ const ATC_DATA = [
     ]
   },
   {
-    classes: ['C'], type: 'clearance', title: 'VFR Departure Clearance — Class C',
+    classes: ['C'], type: 'clearance', title: 'VFR Clearance — Class C',
     note: 'Request VFR departure clearance from Delivery specifying altitude and destination.',
     format: '[ATC Delivery], [Callsign] [Aircraft Type], request VFR departure to [Destination] at [Altitude]',
     examples: [
@@ -28,14 +28,12 @@ const ATC_DATA = [
     ]
   },
   {
-    classes: ['C'], type: 'departure', title: 'Departure Report — Class C',
+    classes: ['C'], type: 'departure', title: 'Ready for lineup — Class C',
     note: 'Contact tower when ready at holding point. After takeoff contact Departures.',
     format: '[ATC Tower], [Callsign], [Location], ready',
     examples: [
       { label: 'Pilot ready', text: 'Brisbane Tower, RSCU533, Taxiway H2, ready' },
       { label: 'ATC clearance', text: 'RSCU533, Brisbane Tower, Taxiway H2 cleared for takeoff' },
-      { label: 'Read back', text: 'Taxiway H2 cleared for takeoff, RSCU533' },
-      { label: 'Departure tracking read back', text: 'Tracking via the DUGGI ONE departure, climbing to A070, XEB' },
     ]
   },
   {
