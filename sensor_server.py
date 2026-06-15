@@ -1,3 +1,4 @@
+
 from flask import Flask, request, jsonify, render_template_string, render_template
 from datetime import datetime
 import subprocess
@@ -21,6 +22,8 @@ AIRBAND_CONFIGS = {
     "TWB_CTAF": "/usr/local/etc/rtl_airband_CTAF.conf",
     "YBOK": "/usr/local/etc/rtl_airband_YBOK.conf",
     # Add more preset configs here as you create them
+    "CTR": "/usr/local/etc/rtl_airband_CTR.conf",    
+# Add more preset configs here as you create them
 }
 
 @app.route('/api/airband', methods=['GET', 'POST'])
@@ -37,6 +40,19 @@ def airband():
         result = subprocess.run(['sudo', 'systemctl', 'is-active', 'rtl_airband'],
                                capture_output=True, text=True)
         return jsonify({'status': result.stdout.strip()})
+        # Read symlink to find current config name
+        current_config = None
+        try:
+            current_path = os.readlink(AIRBAND_ACTIVE_CONFIG)
+            for name, path in AIRBAND_CONFIGS.items():
+                if path == current_path:
+                    current_config = name
+                    break
+            if not current_config:
+                current_config = 'Custom'
+        except Exception:
+            pass
+        return jsonify({'status': result.stdout.strip(), 'config': current_config})
 
 @app.route('/api/airband/custom', methods=['POST'])
 def airband_custom():
@@ -77,7 +93,11 @@ def airband_custom():
                         type = "icecast";
                         server = "192.168.1.133";
                         port = 8000;
+<<<<<<< HEAD
                         mountpoint = "custom.mp3";
+=======
+                        mountpoint = "ATC.mp3";
+>>>>>>> 860164e (restructure dashboard into separate files)
                         send_scan_freq_tags = true;
                         username = "source";
                         password = "password";
@@ -99,6 +119,33 @@ def airband_custom():
 
     return jsonify({'status': 'success', 'freqs': freqs, 'labels': labels})
 
+@app.route('/api/debug/feelslike')
+def debug_feelslike():
+    latest = get_latest_readings()
+    outside = latest.get('OUTSIDE', {})
+    temp_c = outside.get('temperature')
+    humidity = outside.get('humidity')
+    
+    try:
+        wind_speed_kmh = get_wind_speed()
+        wind_error = None
+    except Exception as ex:
+        wind_speed_kmh = 0
+        wind_error = str(ex)
+    
+    wind_speed_ms = wind_speed_kmh / 3.6
+    e = (humidity / 100.0) * 6.105 * math.exp((17.27 * temp_c) / (237.7 + temp_c))
+    at = temp_c + (0.33 * e) - (0.70 * wind_speed_ms) - 4.00
+
+    return jsonify({
+        "temp_c": temp_c,
+        "humidity": humidity,
+        "wind_speed_kmh": wind_speed_kmh,
+        "wind_speed_ms": round(wind_speed_ms, 3),
+        "vapour_pressure_e": round(e, 3),
+        "apparent_temp": round(at, 1),
+        "wind_error": wind_error
+    })
 
 # API endpoint - POST and GET requests via /api/sensor
 @app.route('/api/sensor', methods=['POST', 'GET'])
@@ -167,4 +214,4 @@ def batt_lvl():
     return jsonify(history[-1])
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, threaded=True)

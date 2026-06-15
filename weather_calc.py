@@ -10,14 +10,28 @@ from sensor_data import *
 from config_py import *
 from retry_requests import retry
 
-def get_wind_speed():
-    # Setup the Open-Meteo API client with cache and retry on error
-    cache_session = requests_cache.CachedSession('.cache', expire_after = 3600)
-    retry_session = retry(cache_session, retries = 5, backoff_factor = 0.2)
-    openmeteo = openmeteo_requests.Client(session = retry_session)
+import time
 
-    # Make sure all required weather variables are listed here
-    # The order of variables in hourly or daily is important to assign them correctly below
+import os
+
+WIND_CACHE_FILE = '/tmp/wind_cache.json'
+WIND_CACHE_TTL = 600
+
+_cache_session = requests_cache.CachedSession('/home/pi/weather-station/.cache', expire_after=3600)
+_retry_session = retry(_cache_session, retries=5, backoff_factor=0.2)
+_openmeteo = openmeteo_requests.Client(session=_retry_session)
+
+def get_wind_speed():
+    # Try reading from file cache
+    try:
+        with open(WIND_CACHE_FILE, 'r') as f:
+            cached = json.load(f)
+            if time.time() - cached['timestamp'] < WIND_CACHE_TTL:
+                return cached['value']
+    except (FileNotFoundError, KeyError, json.JSONDecodeError):
+        pass
+
+    # Cache miss — hit the API
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
         "latitude": -27.5,
@@ -26,11 +40,16 @@ def get_wind_speed():
         "timezone": "Australia/Sydney",
         "forecast_days": 1,
     }
-    responses = openmeteo.weather_api(url, params=params)
+    responses = _openmeteo.weather_api(url, params=params)
     response = responses[0]
     current = response.Current()
-    current_wind_speed_10m = current.Variables(0).Value()
-    return current_wind_speed_10m
+    wind_speed = current.Variables(0).Value()
+
+    # Write to file cache
+    with open(WIND_CACHE_FILE, 'w') as f:
+        json.dump({'value': wind_speed, 'timestamp': time.time()}, f)
+
+    return wind_speed
 
 def calculate_feelsLike():
     """

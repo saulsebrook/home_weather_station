@@ -1,8 +1,8 @@
 {
-  "max_temp": 26.15,
-  "max_temp_date": "2026-02-25 16:29",
-  "min_temp": 20,
-  "min_temp_date": null,
+  "max_temp": 25,
+  "max_temp_date": "2026-05-18 17:12",
+  "min_temp": 5.9,
+  "min_temp_date": "2026-06-07 06:27",
   "aircraft_max_distance": 262.8,
   "aircraft_max_distance_date": "2026-02-25 15:48"
 }

@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sensor Comparison</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌤️</text></svg>">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #0f1923 0%, #1e2d40 100%); min-height: 100vh; padding: 1.5rem; }
+.page { max-width: 1000px; margin: 0 auto; }
+.header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+.back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: rgba(255,255,255,0.7); text-decoration: none; padding: 6px 14px; border: 1px solid rgba(255,255,255,0.2); border-radius: 25px; background: rgba(255,255,255,0.1); transition: background 0.2s; }
+.back-link:hover { background: rgba(255,255,255,0.2); }
+.page-title { font-size: 1.8em; font-weight: 600; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+.chart-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+.chart-card { background: rgba(255,255,255,0.95); border-radius: 15px; padding: 1.5rem; box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
+.chart-label { font-size: 13px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; }
+.chart-wrap { position: relative; height: 220px; }
+
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <a href="/" class="back-link">← Back to Dashboard</a>
+      <h1 class="page-title">📊 Sensor Comparison</h1>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#378ADD"></div>Outside</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#D4537E"></div>Inside</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#1D9E75"></div>Garage</div>
+    </div>
+
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-label">Temperature (°C)</div>
+        <div class="chart-wrap"><canvas id="tempChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-label">Humidity (%)</div>
+        <div class="chart-wrap"><canvas id="humChart"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-label">Pressure (hPa)</div>
+        <div class="chart-wrap"><canvas id="pressChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+  <script>
+    const allData = {{ all_data | tojson }};
+
+    const palette = { OUTSIDE: '#378ADD', INSIDE: '#D4537E', GARAGE: '#1D9E75' };
+    const gridColor = 'rgba(0,0,0,0.06)';
+    const textColor = 'rgba(0,0,0,0.4)';
+
+    function makeChart(canvasId, field) {
+      const datasets = Object.entries(allData).map(([id, data]) => ({
+        label: id.charAt(0) + id.slice(1).toLowerCase(),
+        data: data.map(d => ({ x: new Date(d.timestamp), y: d[field] })),
+        borderColor: palette[id],
+        backgroundColor: palette[id] + '18',
+        borderWidth: 1.5,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+        tension: 0.8,
+        fill: false
+      }));
+      new Chart(document.getElementById(canvasId), {
+        type: 'line',
+        data: { datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#fff',
+              borderColor: 'rgba(0,0,0,0.1)',
+              borderWidth: 1,
+              titleColor: 'rgba(0,0,0,0.6)',
+              bodyColor: 'rgba(0,0,0,0.85)',
+              padding: 10,
+              callbacks: {
+                label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}`
+              }
+            }
+          },
+          scales: {
+            x: {
+              type: 'time',
+              time: { tooltipFormat: 'dd/MM HH:mm' },
+              grid: { color: gridColor, drawTicks: false },
+              border: { display: false },
+              ticks: { maxTicksLimit: 8, color: textColor, maxRotation: 0 }
+            },
+            y: {
+              grid: { color: gridColor, drawTicks: false },
+              border: { display: false },
+              ticks: { color: textColor, maxTicksLimit: 5, callback: v => v.toFixed(1) }
+            }
+          }
+        }
+      });
+    }
+
+    makeChart('tempChart', 'temperature');
+    makeChart('humChart', 'humidity');
+    makeChart('pressChart', 'pressure');
+  </script>
+</body>
+</html>

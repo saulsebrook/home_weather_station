@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<<<<<<< HEAD
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌤️</text></svg>">
@@ -2515,5 +2516,329 @@ function toggleATC(idx) {
 
 renderATC();
 </script>
+=======
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Sensor Comparison</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌤️</text></svg>">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    :root {
+      --bg: #0a0f14;
+      --surface: #111921;
+      --surface2: #1a2535;
+      --border: rgba(255,255,255,0.08);
+      --border-bright: rgba(255,255,255,0.15);
+      --text: #e8edf2;
+      --muted: #5a7080;
+      --label: #8899aa;
+      --green: #00d98b;
+      --amber: #f5a623;
+      --blue: #4a9eff;
+      --pink: #D4537E;
+      --teal: #1D9E75;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Inter', sans-serif;
+    }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 0 0 40px;
+    }
+
+    .page-header {
+      padding: 20px 16px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .back-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--border-bright);
+      color: var(--label);
+      text-decoration: none;
+      font-size: 18px;
+      flex-shrink: 0;
+      transition: background 0.2s, color 0.2s;
+    }
+    .back-link:hover { background: var(--surface2); color: var(--text); }
+
+    .header-text {}
+    .header-text .title {
+      font-family: var(--sans);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .header-text h1 {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-top: 1px;
+    }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      gap: 20px;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--label);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .legend-dot {
+      width: 20px;
+      height: 3px;
+      border-radius: 2px;
+    }
+
+    /* Range selector */
+    .range-bar {
+      display: flex;
+      gap: 8px;
+      padding: 12px 16px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      border-bottom: 1px solid var(--border);
+    }
+    .range-bar::-webkit-scrollbar { display: none; }
+    .range-btn {
+      flex-shrink: 0;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border-bright);
+      background: none;
+      color: var(--label);
+      font-family: var(--mono);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .range-btn.active {
+      background: var(--green);
+      border-color: var(--green);
+      color: #0a0f14;
+    }
+
+    /* Charts */
+    .charts {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .chart-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 16px 14px;
+      position: relative;
+      overflow: hidden;
+    }
+    .chart-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+    .chart-card.temp::before { background: var(--amber); }
+    .chart-card.hum::before  { background: var(--blue); }
+    .chart-card.pres::before { background: var(--green); }
+
+    .chart-label {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 14px;
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 180px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-header">
+    <a href="/" class="back-link">&#8592;</a>
+    <div class="header-text">
+      <div class="title">Sensor History</div>
+      <h1>Combined Comparison</h1>
+    </div>
+  </div>
+
+  <div class="legend">
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#4a9eff"></div>Outside
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#D4537E"></div>Inside
+    </div>
+    <div class="legend-item">
+      <div class="legend-dot" style="background:#00d98b"></div>Garage
+    </div>
+  </div>
+
+  <div class="range-bar">
+    <button class="range-btn" onclick="setRange(3, this)">3h</button>
+    <button class="range-btn" onclick="setRange(6, this)">6h</button>
+    <button class="range-btn active" onclick="setRange(24, this)">24h</button>
+    <button class="range-btn" onclick="setRange(48, this)">48h</button>
+    <button class="range-btn" onclick="setRange(168, this)">7d</button>
+    <button class="range-btn" onclick="setRange(0, this)">All</button>
+  </div>
+
+  <div class="charts">
+    <div class="chart-card temp">
+      <div class="chart-label">Temperature (°C)</div>
+      <div class="chart-wrap"><canvas id="tempChart"></canvas></div>
+    </div>
+    <div class="chart-card hum">
+      <div class="chart-label">Humidity (%)</div>
+      <div class="chart-wrap"><canvas id="humChart"></canvas></div>
+    </div>
+    <div class="chart-card pres">
+      <div class="chart-label">Pressure (hPa)</div>
+      <div class="chart-wrap"><canvas id="pressChart"></canvas></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+  <script>
+    const allData = {{ all_data | tojson }};
+
+    const palette = {
+      OUTSIDE: '#4a9eff',
+      INSIDE:  '#D4537E',
+      GARAGE:  '#00d98b'
+    };
+
+    const gridColor  = 'rgba(255,255,255,0.05)';
+    const textColor  = 'rgba(136,153,170,0.9)';
+
+    let charts = {};
+    let currentHours = 24;
+
+    function filterData(data, hours) {
+      if (!hours) return data;
+      const cutoff = Date.now() - hours * 3600 * 1000;
+      return data.filter(d => new Date(d.timestamp).getTime() >= cutoff);
+    }
+
+    function buildDatasets(field, hours) {
+      return Object.entries(allData).map(([id, data]) => ({
+        label: id.charAt(0) + id.slice(1).toLowerCase(),
+        data: filterData(data, hours).map(d => ({ x: new Date(d.timestamp), y: d[field] })),
+        borderColor: palette[id] || '#8899aa',
+        backgroundColor: (palette[id] || '#8899aa') + '15',
+        borderWidth: 1.5,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+        tension: 0.4,
+        fill: false
+      }));
+    }
+
+    function makeChart(canvasId, field) {
+      const ctx = document.getElementById(canvasId).getContext('2d');
+      const chart = new Chart(ctx, {
+        type: 'line',
+        data: { datasets: buildDatasets(field, currentHours) },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: { duration: 300 },
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#1a2535',
+              borderColor: 'rgba(255,255,255,0.1)',
+              borderWidth: 1,
+              titleColor: 'rgba(136,153,170,0.9)',
+              bodyColor: '#e8edf2',
+              padding: 10,
+              titleFont: { family: "'JetBrains Mono', monospace", size: 11 },
+              bodyFont:  { family: "'JetBrains Mono', monospace", size: 12 },
+              callbacks: {
+                label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}`
+              }
+            }
+          },
+          scales: {
+            x: {
+              type: 'time',
+              time: { tooltipFormat: 'dd/MM HH:mm' },
+              grid: { color: gridColor, drawTicks: false },
+              border: { display: false },
+              ticks: {
+                maxTicksLimit: 6,
+                color: textColor,
+                maxRotation: 0,
+                font: { family: "'JetBrains Mono', monospace", size: 10 }
+              }
+            },
+            y: {
+              grid: { color: gridColor, drawTicks: false },
+              border: { display: false },
+              ticks: {
+                color: textColor,
+                maxTicksLimit: 5,
+                font: { family: "'JetBrains Mono', monospace", size: 10 },
+                callback: v => v.toFixed(1)
+              }
+            }
+          }
+        }
+      });
+      return chart;
+    }
+
+    function setRange(hours, btn) {
+      document.querySelectorAll('.range-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      currentHours = hours;
+      Object.entries(charts).forEach(([field, chart]) => {
+        chart.data.datasets = buildDatasets(field, hours);
+        chart.update();
+      });
+    }
+
+    charts['temperature'] = makeChart('tempChart', 'temperature');
+    charts['humidity']    = makeChart('humChart',  'humidity');
+    charts['pressure']    = makeChart('pressChart','pressure');
+  </script>
+>>>>>>> 860164e (restructure dashboard into separate files)
 </body>
 </html>

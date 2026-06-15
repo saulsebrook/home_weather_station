@@ -85,24 +85,32 @@ def get_latest_readings():
     latest = {}
     for filepath in [OUTSIDE, INSIDE, GARAGE]:
         if not os.path.exists(filepath):
-            continue  
+            continue
         if os.path.getsize(filepath) == 0:
-            continue  
-        with open(filepath, 'r') as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                data = json.loads(line.strip())
-                # Skip entries without sensor_id
-                if 'sensor_id' not in data:
-                    continue
-                sensor_id = data['sensor_id']
-                # Keep only the most recent reading for each sensor
-                if sensor_id not in latest or data['timestamp'] > latest[sensor_id]['timestamp']:
-                    latest[sensor_id] = data
-    return latest
-    
+            continue
+        # Read last 10 lines only instead of entire file
+        with open(filepath, 'rb') as f:
+            f.seek(0, 2)  # Seek to end
+            end = f.tell()
+            chunk = min(2048, end)
+            f.seek(-chunk, 2)
+            lines = f.read().decode('utf-8').splitlines()
+        
+        for line in reversed(lines):
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                data = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if 'sensor_id' not in data:
+                continue
+            sensor_id = data['sensor_id']
+            if sensor_id not in latest:
+                latest[sensor_id] = data
+        
+    return latest    
 # Helper function to get historical data for a specific sensor
 def get_sensor_history(sensor_id, limit=100):
     file_map = {
