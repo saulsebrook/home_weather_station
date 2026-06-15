@@ -1,4 +1,3 @@
-
 // ── TAB SWITCHING ──
 function switchTab(id, btn) {
     document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -94,10 +93,11 @@ async function switchCustom() {
     } catch (e) { fb.textContent = 'Request failed'; }
 }
 
-checkAirbandStatus();
-
 // ── ATC RENDER ──
 function renderATC() {
+    const container = document.getElementById('atc-calls');
+    if (!container) return;
+
     const cls  = document.getElementById('atc-class').value;
     const type = document.getElementById('atc-type').value;
 
@@ -107,7 +107,6 @@ function renderATC() {
         return classMatch && typeMatch;
     });
 
-    const container = document.getElementById('atc-calls');
     if (!filtered.length) {
         container.innerHTML = '<div class="atc-empty">No calls match this filter.</div>';
         return;
@@ -145,4 +144,8 @@ function toggleATC(idx) {
     document.getElementById('atc-item-' + idx).classList.toggle('open');
 }
 
-renderATC();
+// ── INIT ──
+document.addEventListener('DOMContentLoaded', () => {
+    checkAirbandStatus();
+    renderATC();
+});
