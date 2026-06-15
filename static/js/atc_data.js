@@ -47,6 +47,14 @@ const ATC_DATA = [
     ]
   },
   {
+    classes: ['C'], type: 'inbound', title: 'Inbound — First contact approach',
+    note: 'Making first contact with approach enroute',
+    format: 'ATC Unit, Callsign, Cleared Level, [Visual], received ATIS Code',
+    examples: [
+      { label: 'QFA on descent to A090 approaching YSSY', text: 'Sydney Approach, QFA426, descending to A090, received Delta' },
+    ]
+  },
+  {
     classes: ['C'], type: 'inbound', title: 'Inbound — Entering Class C',
     note: 'Contact Approach with position, track, level and ATIS before entering Class C.',
     format: '[Approach], [Callsign], [Distance] miles [Direction] tracking [Reporting Point], inbound, with [ATIS]',
