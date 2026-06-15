@@ -55,7 +55,7 @@ const ATC_DATA = [
     ]
   },
   {
-    classes: ['C'], type: 'inbound', title: 'Inbound — Entering Class C',
+    classes: ['C'], type: 'inbound', title: 'Inbound — Entering Class C from uncontrolled',
     note: 'Contact Approach with position, track, level and ATIS before entering Class C.',
     format: '[Approach], [Callsign], [Distance] miles [Direction] tracking [Reporting Point], inbound, with [ATIS]',
     examples: [
