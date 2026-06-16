@@ -18,8 +18,28 @@ const ATC_DATA = [
     ]
   },
   {
-    classes: ['C'], type: 'taxi', title: 'Taxi — Class C',
-    note: 'Report bay/pad number. Cite ATIS after callsign. Read back full taxi instructions.',
+    classes: ['C'], type: 'taxi', title: 'Circuits — Class C',
+    note: 'Clearance to conduct circuits.',
+    format: 'ATC Unit, Callsign, for circuits, request clearance',
+    examples: [
+      { label: 'Pilot', text: 'Melbourne Delivery, LKU, for circuits, request clearance' },
+      { label: 'ATC response', text: 'LKU, cleared to operate in the circuit area, not above A020, squawk 0100' },
+      { label: 'Pilot', text: 'Cleared to operate in the circuit area, not above A020, squawk 0100, LKU' },
+    ]
+  },
+  {
+    classes: ['C'], type: 'circuits', title: 'Taxi — Class C',
+    note: 'Report bay/pad number. Cite ATIS after callsign. Read back full taxi instructions. Request Ground/Air taxi, or Air transit.',
+    format: '[ATC Ground], [Callsign], [Location], [ATIS], request taxi',
+    examples: [
+      { label: 'Pilot', text: 'Brisbane Ground, FD412, GA ramp, request taxi for VFR departure with Lima' },
+      { label: 'Helicopter — air taxi', text: 'Bankstown Ground, HSZ, taxiway F, for the main pad, received V, request air taxi' },
+      { label: 'ATC response', text: 'HSZ, air taxi to the main pad' },
+    ]
+  },
+   {
+    classes: ['D'], type: 'circuits', title: 'Taxi — Class D',
+    note: 'Report bay/pad number. Cite ATIS after callsign. Read back full taxi instructions. Request Ground/Air taxi, or Air transit.',
     format: '[ATC Ground], [Callsign], [Location], [ATIS], request taxi',
     examples: [
       { label: 'Pilot', text: 'Brisbane Ground, FD412, GA ramp, request taxi for VFR departure with Lima' },
@@ -30,10 +50,21 @@ const ATC_DATA = [
   {
     classes: ['C'], type: 'departure', title: 'Ready for lineup — Class C',
     note: 'Contact tower when ready at holding point. After takeoff contact Departures.',
-    format: '[ATC Tower], [Callsign], [Location], ready',
+    format: '[ATC Tower], [Callsign], ready',
     examples: [
       { label: 'Pilot ready', text: 'Brisbane Tower, RSCU533, Taxiway H2, ready' },
       { label: 'ATC clearance', text: 'RSCU533, Brisbane Tower, Taxiway H2 cleared for takeoff' },
+    ]
+  },
+  {
+    classes: ['C'], type: 'departure', title: 'Outside Manouvering area — Class C',
+    note: 'Helicopters and some light aircraft may operate from areas outside the manoeuvring area, such as hospital helipads or small airstrips inside the CTR, or other locations on the aerodrome. A takeoff/landing clearance will not be provided in these situations but approval must be sought to become airborne inside the control zone. After obtaining an airways clearance, ATC will instruct you to 'report airborne' or 'report on the ground'.',
+    format: '[ATC Tower], [Type][Callsign], [Location], for [Destination], received [ATIS], ready',
+    examples: [
+      { label: 'Pilot ready', text: 'Sydney Tower, helicopter RSCU201, St George Hospital, for YSBK, received F, ready' },
+      { label: 'ATC clearance', text: 'RSCU201, cleared to YSBK direct, climb to A015 visual, squawk 0466, report airborne' },
+      { label: 'Pilot', text: 'Cleared to YSBK direct, climb to A015 visual, squawk 0466, RSCU201' },
+      { label: 'Pilot', text: 'RSCU201, airborne' },
     ]
   },
   {
