@@ -197,12 +197,10 @@ const ATC_DATA = [
   {
     classes: ['G'], type: 'departure', title: 'Departure Report — Class G IFR',
     note: 'Call FIA/CTR taxiing, then again with departure report once airborne.',
-    format: 'Taxiing: [FIA] CTR [Callsign] IFR TAXIING [Airport] FOR [Airport]\nAirborne (surveillance): [Callsign] [Position] [Present Level] CLIMBING [Level] ESTIMATE [Waypoint] AT [Time]\nAirborne (no surveillance): [Callsign] DEPARTED [Airport] [Time] TRACKING [Track°] [Present Level] CLIMBING [Level] ESTIMATE [Waypoint] AT [Time]',
+    format: '(surveillance): [Callsign] [Position] [Present Level] CLIMBING [Level] ESTIMATE [Waypoint] AT [Time]\n(no surveillance): [Callsign] DEPARTED [Airport] [Time] TRACKING [Track°] [Present Level] CLIMBING [Level] ESTIMATE [Waypoint] AT [Time]',
     examples: [
-      { label: 'Taxiing call', text: 'Brisbane CTR, Careflight 21, IFR taxiing Archerfield for Westmead' },
       { label: 'Airborne — in surveillance', text: 'Careflight 21, currently 5 miles south of Wellcamp, A040, climbing A080, estimate BLHS at 35' },
       { label: 'Airborne — no surveillance', text: 'Careflight 21, departed Archerfield time 22, tracking 045, A020, climbing A060, estimate BLHS at 35' },
-      { label: 'Departure tracking read back', text: 'RXA6417, tracking 203, climbing to A070' },
     ]
   },
   {
