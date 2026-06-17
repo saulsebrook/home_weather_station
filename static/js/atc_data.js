@@ -58,7 +58,7 @@ const ATC_DATA = [
   },
   {
     classes: ['C'], type: 'departure', title: 'Outside Manouvering area — Class C',
-    note: 'Helicopters and some light aircraft may operate from areas outside the manoeuvring area, such as hospital helipads or small airstrips inside the CTR, or other locations on the aerodrome. A takeoff/landing clearance will not be provided in these situations but approval must be sought to become airborne inside the control zone. After obtaining an airways clearance, ATC will instruct you to 'report airborne' or 'report on the ground'.',
+    note: 'Helicopters and some light aircraft may operate from areas outside the manoeuvring area, such as hospital helipads or small airstrips inside the CTR, or other locations on the aerodrome. A takeoff/landing clearance will not be provided in these situations but approval must be sought to become airborne inside the control zone. After obtaining an airways clearance, ATC will instruct you to report airborne.',
     format: '[ATC Tower], [Type][Callsign], [Location], for [Destination], received [ATIS], ready',
     examples: [
       { label: 'Pilot ready', text: 'Sydney Tower, helicopter RSCU201, St George Hospital, for YSBK, received F, ready' },
