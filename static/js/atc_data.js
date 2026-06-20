@@ -10,6 +10,26 @@ const ATC_DATA = [
     ]
   },
   {
+    classes: ['C', 'G'], type: 'clearance', title: 'VFR Airways Clearance — Class C/G',
+    note: 'Tracking from Class G into Class C. Request before the boundary; remain clear / orbit if not cleared. If frequency busy, prefix with "[Unit], [Callsign], request". Read back clearance limit, level, and squawk.',
+    format: '[ATC Unit], [Callsign], [Aircraft Type], [Reporting Point], [Altitude], received [ATIS], request clearance [tracking/intentions]',
+    examples: [
+      { label: 'VFR request', text: 'Brisbane Approach, ABC, Cessna 172, TV Towers, 1,500, received Delta, request clearance to track north through Class C' },
+      { label: 'ATC response', text: 'ABC, cleared to track north not above 2,500, squawk 4271' },
+    ]
+  },
+  {
+    classes: ['C', 'G'], type: 'clearance', title: 'IFR Departure Clearance — Class C/G',
+    note: 'Obtain on the ground from Ground/SMC before taxi — already coordinated with the Brisbane TCU. Read back route, level, and squawk. Initial level is capped by the Class C steps; check in with Approach after departure and they release further climb once identified.',
+    format: '[ATC Ground/SMC], [Callsign], [Aircraft Type], request airways clearance',
+    examples: [
+      { label: 'IFR request', text: 'Archerfield Ground, ABC, request airways clearance' },
+      { label: 'ATC response', text: 'ABC, cleared to YHBA via flight planned route, runway 10L, climb to 2,000, squawk 4271, departure frequency Brisbane Approach' },
+      { label: 'Approach check-in', text: 'Brisbane Approach, ABC, passing 1,200, climbing 2,000' },
+      { label: 'Approach response', text: 'ABC, Brisbane Approach, identified, climb to 6,000' },
+    ]
+  },
+  {
     classes: ['C'], type: 'clearance', title: 'VFR Clearance — Class C',
     note: 'Request VFR departure clearance from Delivery specifying altitude and destination.',
     format: '[ATC Delivery], [Callsign] [Aircraft Type], request VFR departure to [Destination] at [Altitude]',
