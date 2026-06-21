@@ -10,12 +10,49 @@ const ATC_DATA = [
     ]
   },
   {
+    classes: ['C', 'E', 'G'], type: 'clearance', title: 'Airborne IFR Pickup — Deteriorating Conditions',
+    note: 'Ask early, while still VMC. Requires IFR rating + IFR-equipped aircraft, and you must be able to climb to and hold LSALT. In Class G you don\'t need a clearance — advise Centre and operate IFR with traffic info / self-separation; you only need an airways clearance where the route enters E, C or A. If frequency busy, prefix with the "request" call.',
+    format: '[ATC Unit], [Callsign], [Aircraft Type], [Position], [Level], VFR, request airways clearance IFR to [Destination], request [Level at/above LSALT]',
+    examples: [
+      { label: 'Request', text: 'Brisbane Centre, ABC, request' },
+      { label: 'ATC', text: 'ABC, pass your request' },
+      { label: 'Full request', text: 'ABC, Cessna 182, 20 miles north of Toowoomba, maintaining 4,500, VFR, request airways clearance IFR to YBAF, request 6,000' },
+      { label: 'Urgent variant', text: 'ABC, request IFR clearance due deteriorating conditions' },
+      { label: 'ATC clearance', text: 'ABC, cleared IFR to YBAF via flight planned route, climb to 6,000, squawk 4271' },
+      { label: '---', text: '--------' },
+      { label: 'Pilot', text: 'MELB CTR EYZ IFR upgrad request' },
+      { label: 'ATC', text: 'EYZ MELB CTR' },
+       { label: 'Pilot', text: 'EYZ we are a Cirrus sr22 5 miles north of Ballarat currently VFR on top not going to be able to get into our destination request IFR upgrade tracking ESDIG AVALON MORRABBIN 7000' },
+       { label: 'ATC', text: 'EYZ Squawk 0577 ' },
+       { label: 'Pilot', text: 'Squawk 0577 EYZ' },
+      { label: 'ATC', text: 'EYZ no reported IFR traffic track via ESDIG AVALON MORRABBIN 7000' },
+    ]
+  },
+  {
+    classes: ['C', 'E', 'G'], type: 'emergency', title: 'Inadvertent IMC — VFR into Cloud',
+    note: 'Fly the aircraft first: wings level on instruments, gentle rate-one 180 back toward the VMC you just left, climb to LSALT/MSA if terrain is a factor. Trust the instruments, ignore the leans. Then declare PAN or MAYDAY and squawk 7700. If not instrument rated/current this is survival only — get back to VMC and get help.',
+    format: '[MAYDAY x3 / PAN x3], [ATC Unit], [Callsign], VFR aircraft inadvertent IMC, [Position], [Level], request assistance',
+    examples: [
+      { label: 'MAYDAY call', text: 'MAYDAY MAYDAY MAYDAY, Brisbane Centre, ABC, VFR aircraft inadvertent IMC, [position], [level], request assistance' },
+      { label: 'PAN variant', text: 'PAN PAN, PAN PAN, PAN PAN, Brisbane Centre, ABC, VFR encountering IMC, request vectors to VMC' },
+      { label: 'ATC response', text: 'ABC, Brisbane Centre, roger, maintain wings level, turn left heading 180, climb to 6,000, terrain clearance assured' },
+    ]
+  },
+  {
     classes: ['C', 'G'], type: 'clearance', title: 'VFR Airways Clearance — Class C/G',
     note: 'Tracking from Class G into Class C. Request before the boundary; remain clear / orbit if not cleared. If frequency busy, prefix with "[Unit], [Callsign], request". Read back clearance limit, level, and squawk.',
     format: '[ATC Unit], [Callsign], [Aircraft Type], [Reporting Point], [Altitude], received [ATIS], request clearance [tracking/intentions]',
     examples: [
       { label: 'VFR request', text: 'Brisbane Approach, ABC, Cessna 172, TV Towers, 1,500, received Delta, request clearance to track north through Class C' },
       { label: 'ATC response', text: 'ABC, cleared to track north not above 2,500, squawk 4271' },
+    ]
+  },
+  {
+    classes: ['D'], type: 'clearance', title: 'VFR Track overhead — Class D',
+    note: 'Tracking overhead call to ATC',
+    format: '[ATC Unit], [Callsign], [Aircraft Type], [Reporting Point], [Altitude], received [ATIS], [intentions]',
+    examples: [
+      { label: 'Pilot', text: 'Avalon Approach cirrus EYZ is 15 miles to the east, 2500 will be tracking overhead at 2500, and then to the northwest, estimate overhead time X' },
     ]
   },
   {
