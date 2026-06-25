@@ -93,11 +93,8 @@ def airband_custom():
                         type = "icecast";
                         server = "192.168.1.133";
                         port = 8000;
-<<<<<<< HEAD
                         mountpoint = "custom.mp3";
-=======
                         mountpoint = "ATC.mp3";
->>>>>>> 860164e (restructure dashboard into separate files)
                         send_scan_freq_tags = true;
                         username = "source";
                         password = "password";
