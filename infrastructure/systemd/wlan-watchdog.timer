@@ -1,0 +1,10 @@
+[Unit]
+Description=Run wlan-watchdog every 5 minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+Unit=wlan-watchdog.service
+
+[Install]
+WantedBy=timers.target

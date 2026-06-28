@@ -1,0 +1,25 @@
+[connection]
+id=preconfigured
+uuid=c2a02d4f-9140-41ef-8060-c248b0400ac4
+type=wifi
+timestamp=1782435855
+
+[wifi]
+mode=infrastructure
+powersave=2
+ssid=It Burns When IP
+
+[wifi-security]
+key-mgmt=wpa-psk
+psk=REPLACE_ME
+
+[ipv4]
+address1=192.168.1.133/24,192.168.1.1
+dns=192.168.1.1;
+method=manual
+
+[ipv6]
+addr-gen-mode=default
+method=auto
+
+[proxy]

@@ -1,0 +1,7 @@
+[Unit]
+Description=Bounce wlan0 if sensor nodes go silent (radio wedge recovery)
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/wlan-watchdog.sh
