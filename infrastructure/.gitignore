@@ -1,0 +1,17 @@
+# ─── SECRETS: never commit real ones ──────────────────────────────────
+# Only *.example files are allowed in the repo. The real files below are
+# blocked so they can never be staged by accident.
+secrets/fr24feed.ini
+secrets/wg0.conf
+secrets/*.key
+secrets/*_private*
+configs/networkmanager/*.nmconnection
+!configs/networkmanager/*.nmconnection.example
+!secrets/*.example
+
+# ─── Runtime / data — not infrastructure ──────────────────────────────
+*.jsonl
+*.bak
+*.log
+__pycache__/
+*.pyc
