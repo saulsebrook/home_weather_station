@@ -22,34 +22,14 @@ _retry_session = retry(_cache_session, retries=5, backoff_factor=0.2)
 _openmeteo = openmeteo_requests.Client(session=_retry_session)
 
 def get_wind_speed():
-    # Try reading from file cache
+    # Read-only: the wind-refresh systemd timer is the sole writer of this cache.
+    # The page must never make the (slow, blocking) API call itself.
     try:
         with open(WIND_CACHE_FILE, 'r') as f:
             cached = json.load(f)
-            if time.time() - cached['timestamp'] < WIND_CACHE_TTL:
-                return cached['value']
+            return cached['value']          # serve it even if stale — never block
     except (FileNotFoundError, KeyError, json.JSONDecodeError):
-        pass
-
-    # Cache miss — hit the API
-    url = "https://api.open-meteo.com/v1/forecast"
-    params = {
-        "latitude": -27.5,
-        "longitude": 151.94,
-        "current": "wind_speed_10m",
-        "timezone": "Australia/Sydney",
-        "forecast_days": 1,
-    }
-    responses = _openmeteo.weather_api(url, params=params)
-    response = responses[0]
-    current = response.Current()
-    wind_speed = current.Variables(0).Value()
-
-    # Write to file cache
-    with open(WIND_CACHE_FILE, 'w') as f:
-        json.dump({'value': wind_speed, 'timestamp': time.time()}, f)
-
-    return wind_speed
+        return 0                            # no cache yet → safe default, page still fast
 
 def calculate_feelsLike():
     """
